@@ -31,9 +31,7 @@ htmlcov/
 
 # Data & Database (Vector Store)
 # chroma_db/  # Temporarily including in git for assessment deployment
-*.db
-*.sqlite
-*.sqlite3
+
 
 # Logs
 *.log
