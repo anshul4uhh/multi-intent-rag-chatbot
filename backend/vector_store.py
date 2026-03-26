@@ -26,19 +26,16 @@ client = chromadb.PersistentClient(path=db_path)
 nec_collection = client.get_or_create_collection(
     name="nec_docs",
     embedding_function=embedding,
-    get_or_create=True
 )
 
 solar_collection = client.get_or_create_collection(
     name="solar_docs",
     embedding_function=embedding,
-    get_or_create=True
 )
 
 wattmonk_collection = client.get_or_create_collection(
     name="wattmonk_docs",
     embedding_function=embedding,
-    get_or_create=True
 )
 
 
