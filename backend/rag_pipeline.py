@@ -206,8 +206,13 @@ def run_rag(query, chat_history=None):
     
     answer = generate_response(prompt, chat_history=formatted_history)
     
-    # Add sources citation if available
-    if sources and any(s['source_type'] for s in sources):
+    # Check if this is an out-of-scope redirect response (doesn't recommend dermatologist or provide KB info)
+    is_redirect = "can only provide information about skin cancer" in answer.lower() or \
+                  "ask me about skin cancer" in answer.lower() or \
+                  "skin health concerns" in answer.lower()
+    
+    # Only add sources if we have docs and this is NOT a redirect response
+    if sources and any(s['source_type'] for s in sources) and not is_redirect:
         citations = "\n\n---\n📚 **Sources:**\n"
         for source in sources:
             if source['page_str']:
