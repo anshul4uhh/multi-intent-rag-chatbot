@@ -206,11 +206,8 @@ def run_rag(query, chat_history=None):
     
     answer = generate_response(prompt, chat_history=formatted_history)
     
-    # Don't show sources if rejecting out-of-scope questions
-    is_rejection = "I can only provide information" in answer or "only provide information about" in answer.lower()
-    
-    # Add sources citation if available and answer uses knowledge base
-    if not is_rejection and sources and any(s['source_type'] for s in sources):
+    # Add sources citation if available
+    if sources and any(s['source_type'] for s in sources):
         citations = "\n\n---\n📚 **Sources:**\n"
         for source in sources:
             if source['page_str']:
