@@ -5,40 +5,31 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 
 intent_examples = {
 
-    "nec": [
-        "electrical code rules",
-        "grounding requirements",
-        "ampacity definition",
-        "overcurrent protection",
-        "nec wiring rules",
-        "national electrical code",
-        "article section",
-        "conductor sizing",
-        "circuit protection"
+    "skin_cancer": [
+        "skin cancer types",
+        "melanoma symptoms",
+        "basal cell carcinoma",
+        "squamous cell carcinoma",
+        "skin cancer detection",
+        "skin cancer risk factors",
+        "skin cancer prevention",
+        "skin cancer treatment",
+        "skin lesion characteristics",
+        "ABCDE rule",
+        "skin cancer screening",
+        "dermatology"
     ],
 
-    "solar": [
-        "solar panel installation",
-        "pv module wiring",
-        "solar inverter connection",
-        "photovoltaic system setup",
-        "solar array configuration",
-        "solar panel installation guide",
-        "solar system design",
-        "pv system commissioning",
-        "solar equipment specifications"
-    ],
-
-    "wattmonk": [
-        "what does wattmonk do",
-        "wattmonk services",
-        "company information",
-        "who founded wattmonk",
-        "wattmonk business model",
-        "wattmonk experience",
-        "wattmonk expertise",
-        "wattmonk capabilities",
-        "wattmonk offerings"
+    "general_health_faq": [
+        "skin health",
+        "sun protection",
+        "sunscreen recommendations",
+        "skin care tips",
+        "dermatologist visit",
+        "skin disease",
+        "skin condition",
+        "health FAQ",
+        "general medical question"
     ]
 }
 
@@ -47,7 +38,7 @@ intent_embeddings = {
     for intent, samples in intent_examples.items()
 }
 
-CONFIDENCE_THRESHOLD = 0.3
+CONFIDENCE_THRESHOLD = 0.25
 
 
 def route_query(query):
@@ -58,7 +49,7 @@ def route_query(query):
         query (str): User query string
         
     Returns:
-        str: Intent classification ('nec', 'solar', 'wattmonk')
+        str: Intent classification ('skin_cancer', 'general_health_faq')
     """
     query_embedding = model.encode(query)
 
@@ -72,6 +63,8 @@ def route_query(query):
     best_intent = max(scores, key=scores.get)
     best_score = scores[best_intent]
     
-    
+    # If confidence is too low, route to general health FAQ as fallback
+    if best_score < CONFIDENCE_THRESHOLD:
+        best_intent = "general_health_faq"
 
     return best_intent

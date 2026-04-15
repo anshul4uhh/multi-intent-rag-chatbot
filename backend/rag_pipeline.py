@@ -166,33 +166,33 @@ def run_rag(query, chat_history=None):
         metadatas = _chunk_cache["metadatas"]
         cached_note = " (Using cached knowledge for faster response)"
     else:
-        if intent == "nec":
-            results = search_nec(query)
-            docs = results["documents"]
-            metadatas = results["metadatas"]
-        elif intent == "solar":
-            results = search_solar(query)
-            docs = results["documents"]
-            metadatas = results["metadatas"]
-        elif intent == "wattmonk":
-            results = search_wattmonk(query)
-            docs = results["documents"]
-            metadatas = results["metadatas"]
-        else:
-            return "I am designed to answer NEC, solar installation, and Wattmonk questions only."
+        # All queries use the skin cancer knowledge base
+        results = search_nec(query)  # Now searches skin cancer KB
+        docs = results["documents"]
+        metadatas = results["metadatas"]
+        
+        # If no results found and intent is general health FAQ, indicate it gracefully
+        if not docs:
+            if intent == "general_health_faq":
+                # We'll still pass empty context, LLM will answer from general knowledge
+                pass
         
         update_cache(docs, metadatas, intent)
         cached_note = ""
     
-    context = "\n\n".join(docs)
-    sources = format_sources(docs, metadatas)
+    context = "\n\n".join(docs) if docs else ""
+    sources = format_sources(docs, metadatas) if docs else []
     
     formatted_history = format_chat_history(chat_history) if chat_history else []
     
-    prompt = SYSTEM_PROMPT + RAG_PROMPT.format(
-        context=context,
-        question=query
-    )
+    if context:
+        prompt = SYSTEM_PROMPT + RAG_PROMPT.format(
+            context=context,
+            question=query
+        )
+    else:
+        # No context available - guide user
+        prompt = SYSTEM_PROMPT + f"\nUser Question: {query}\n\nNote: No matching information found in knowledge base."
     
     if formatted_history:
         history_context = "\n".join([
@@ -206,11 +206,14 @@ def run_rag(query, chat_history=None):
     
     answer = generate_response(prompt, chat_history=formatted_history)
     
-    citations = "\n\n---\n📚 **Sources:**\n"
-    for source in sources:
-        if source['page_str']:
-            citations += f"• **{source['source_type']}** (Page {source['page_str']})\n"
-        else:
-            citations += f"• **{source['source_type']}**\n"
-    
-    return answer + citations + cached_note
+    # Add sources citation if available
+    if sources and any(s['source_type'] for s in sources):
+        citations = "\n\n---\n📚 **Sources:**\n"
+        for source in sources:
+            if source['page_str']:
+                citations += f"• **{source['source_type']}** (Page {source['page_str']})\n"
+            else:
+                citations += f"• **{source['source_type']}**\n"
+        return answer + citations + cached_note
+    else:
+        return answer + cached_note

@@ -11,8 +11,8 @@ import streamlit as st
 from backend.rag_pipeline import run_rag
 
 st.set_page_config(
-    page_title="Multi-Intent Technical Chatbot",
-    page_icon="⚡",
+    page_title="Skin Cancer Information Chatbot",
+    page_icon="🏥",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -277,7 +277,7 @@ def assistant_bubble_html(content: str, sources: list[str]) -> str:
         )
     return (
         f'<div class="assistant-row">'
-        f'<div class="assistant-avatar">⚡</div>'
+        f'<div class="assistant-avatar">🏥</div>'
         f'<div class="assistant-bubble">{content}{src}</div>'
         f'</div>'
     )
@@ -285,7 +285,7 @@ def assistant_bubble_html(content: str, sources: list[str]) -> str:
 
 TYPING_HTML = (
     '<div class="typing-row">'
-    '<div class="assistant-avatar">⚡</div>'
+    '<div class="assistant-avatar">🏥</div>'
     '<div class="typing-bubble">'
     '<div class="dot"></div><div class="dot"></div><div class="dot"></div>'
     '</div></div>'
@@ -297,17 +297,17 @@ if "messages" not in st.session_state:
 
 
 with st.sidebar:
-    st.header("⚡ About")
+    st.header("🏥 About")
     st.write(
-        "This chatbot uses **Retrieval-Augmented Generation (RAG)** to answer "
-        "questions from verified technical documents."
+        "This chatbot uses **Retrieval-Augmented Generation (RAG)** to provide accurate "
+        "information about skin cancer, risk factors, prevention, and general dermatological health."
     )
     st.divider()
     st.subheader("📚 Knowledge Base")
     st.markdown("""
-- **NEC Code** — 2023 National Electrical Code
-- **Solar Manuals** — Professional installation guides
-- **Wattmonk** — Company documentation
+- **Skin Cancer Information** — Types, symptoms, and detection methods
+- **Prevention & Risk Factors** — Causes and how to reduce risk  
+- **General Skin Health FAQ** — Dermatological health and sun protection
     """)
     st.divider()
     if st.button("🗑️ Clear Chat"):
@@ -315,16 +315,16 @@ with st.sidebar:
         st.rerun()
 
 
-st.title("⚡ Multi-Intent Technical Chatbot")
-st.caption("Ask questions about NEC Electrical Code, Solar Installation, or Wattmonk Company Information")
+st.title("🏥 Skin Cancer Information Chatbot")
+st.caption("Ask me about skin cancer types, detection, prevention, symptoms, or general skin health questions")
 
 
 if not st.session_state.messages:
     st.markdown(
-        '<div class="empty-state">'
+        '<div class="empty-state">'  
         '<div class="icon">💬</div>'
         '<p>No messages yet.<br>'
-        'Ask me anything about NEC Code, Solar Installation, or Wattmonk!</p>'
+        'Ask me about skin cancer types, prevention, detection, or skin health!</p>'
         '</div>',
         unsafe_allow_html=True
     )
@@ -339,7 +339,7 @@ else:
             )
 
 
-user_input = st.chat_input("Ask a technical question…")
+user_input = st.chat_input("Ask about skin cancer or skin health…")
 
 if user_input:
     user_text = user_input.strip()
